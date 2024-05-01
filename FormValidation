@@ -1,0 +1,115 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('Form Validation Demo'),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: MyForm(),
+        ),
+      ),
+    );
+  }
+}
+
+class MyForm extends StatefulWidget {
+  @override
+  _MyFormState createState() => _MyFormState();
+}
+
+class _MyFormState extends State<MyForm> {
+  final _formKey = GlobalKey<FormState>();
+  String? _name;
+  String? _email;
+
+  @override
+  Widget build(BuildContext context) {
+    return Form(
+      key: _formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TextFormField(
+            decoration: InputDecoration(
+              labelText: 'Name',
+            ),
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter your name';
+              }
+              return null;
+            },
+            onSaved: (value) {
+              _name = value;
+            },
+          ),
+          TextFormField(
+            decoration: InputDecoration(
+              labelText: 'Email',
+            ),
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter your email';
+              }
+              if (!value.contains('@')) {
+                return 'Please enter a valid email address';
+              }
+              return null;
+            },
+            onSaved: (value) {
+              _email = value;
+            },
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16.0),
+            child: ElevatedButton(
+              onPressed: () {
+                if (_formKey.currentState?.validate() ?? false) {
+                  _formKey.currentState?.save();
+                  _showDialog();
+                }
+              },
+              child: Text('Submit'),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Form Data'),
+          content: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Name: $_name'),
+              Text('Email: $_email'),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
